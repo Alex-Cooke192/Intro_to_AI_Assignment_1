@@ -7,7 +7,9 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 
 # Define global variables
-
+df = pd.DataFrame()
+le = LabelEncoder()
+model = None
 
 # Parses csv or excel file and saves as a pandas DataFrame, clean data for training
 def load_dataset():
