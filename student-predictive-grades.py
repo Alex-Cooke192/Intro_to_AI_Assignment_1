@@ -60,6 +60,28 @@ def load_dataset():
             messagebox.showerror("Error", f"Failed to load dataset: {e}")
     return None
 
+def encode_data(features, target):
+    global le, data_encoded_flag, model
+    
+    # Create a copy of feature variable data
+    X = df[features].copy()
+
+    # Encode only categorical columns
+    for column in X.columns:
+        if X[column].dtype == 'object':  # Only transform non-numeric features
+            X[column] = le.fit_transform(X[column])
+
+    # Handle the target variable
+    print('target type:', df[target].dtype)
+    if df[target].dtype == 'object':  # If categorical, encode 
+        y = le.fit_transform(df[target])
+    else:
+        print('Data continuous')
+        y = df[target].values  # If continuous, keep as-is
+    
+    data_encoded_flag = True
+    return X, y
+
 # Uses input data to create a model and tests accuracy of the model
 def train_model(df, features, target):
     try:
