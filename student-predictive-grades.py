@@ -11,6 +11,7 @@ from sklearn.preprocessing import LabelEncoder
 
 # Parses csv or excel file and saves as a pandas DataFrame, clean data for training
 def load_dataset():
+    global df, data_encoded_flag
     file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv"), ("Excel files", "*.xlsx;*.xls")])
     if file_path:
         try:
@@ -18,7 +19,33 @@ def load_dataset():
                 df = pd.read_csv(file_path)
             else:
                 df = pd.read_excel(file_path, engine='openpyxl')
+            ### Clean and format the data
+                # Remove rows with missing data
+            df = df.dropna()
+                # Remove rows where age is unknown
+            df = df[df['age'] != 'unknown']
+                # Remove rows where study time varies
+            df = df[df['study_hours_per_day'] != 'varies']
+                # Remove rows where exam score > 100 - not possible! 
+            df = df[df['exam_score'] < 101]
+                # Remove leading/trailing spaces from text-based attributes
+            data_encoded_flag = False
+            for column in df.columns:
+                if df[column].dtype == object:
+                    df[column] = df[column].str.strip()
+            ### Get data to correct types
+                # convert age to integers
+            df["age"] = pd.to_numeric(df["age"], errors="coerce")
+                # Remove any rows where 'age' is NaN
+            df = df.dropna(subset=["age"])
+                
+                # Convert study_hours_per_day to number
+            df["study_hours_per_day"] = pd.to_numeric(df["study_hours_per_day"], errors="coerce")
+                # Remove any rows where 'study_hours_per_day' is NaN
+            df = df.dropna(subset=["study_hours_per_day"])
+                
             messagebox.showinfo("Success", "Dataset loaded successfully *but did you check the script!")
+            print(df)
             return df
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load dataset: {e}")
