@@ -39,6 +39,7 @@ def load_dataset():
             for column in df.columns:
                 if df[column].dtype == object:
                     df[column] = df[column].str.strip()
+    
         ### Get data to correct types
             # convert age to integers
             df["age"] = pd.to_numeric(df["age"], errors="coerce")
