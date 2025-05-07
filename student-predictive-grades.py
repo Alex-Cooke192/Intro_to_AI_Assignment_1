@@ -6,10 +6,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 
-#add funtion
+# Define global variables
 
 
-# Please add funtion comment
+# Parses csv or excel file and saves as a pandas DataFrame, clean data for training
 def load_dataset():
     file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv"), ("Excel files", "*.xlsx;*.xls")])
     if file_path:
@@ -24,7 +24,7 @@ def load_dataset():
             messagebox.showerror("Error", f"Failed to load dataset: {e}")
     return None
 
-# Please add funtion comment
+# Uses input data to create a model and tests accuracy of the model
 def train_model(df, features, target):
     try:
         X = df[features]
@@ -40,7 +40,7 @@ def train_model(df, features, target):
         messagebox.showerror("Error", f"Failed to train model: {e}")
     return None
 
-# Please add funtion comment
+# Uses model to predict values of the target variable for a given dataset of features
 def make_predictions(model, df, features):
     try:
         X_new = df[features]
@@ -50,36 +50,36 @@ def make_predictions(model, df, features):
     except Exception as e:
         messagebox.showerror("Error", f"Failed to make predictions: {e}")
 
-# Please add funtion comment
+# Set up main tkinter window 
 root = tk.Tk()
 root.title("Student Predictive Grades")
 
-# Please add funtion comment
+# Create load_dataset button and add to GUI
 load_button = tk.Button(root, text="Load Dataset", command=lambda: load_dataset())
 load_button.pack(pady=10)
 
-#Please add funtion comment
+# Add label & entry widget for feature variable(s)
 tk.Label(root, text="Features (comma-separated):").pack()
 features_entry = tk.Entry(root)
 features_entry.pack(pady=5)
 
-# Please add funtion comment
+# Add label & entry widget for target variables
 tk.Label(root, text="Target:").pack()
 target_entry = tk.Entry(root)
 target_entry.pack(pady=5)
 
-# Please add funtion comment
+# Create train_model button & add to GUI
 train_button = tk.Button(root, text="Train Model", command=lambda: train_model(df, features_entry.get().split(','), target_entry.get()))
 train_button.pack(pady=10)
 
-# Please add funtion comment
+# Create make_predictions button & add to GUI
 predict_button = tk.Button(root, text="Make Predictions", command=lambda: make_predictions(model, df, features_entry.get().split(',')))
 predict_button.pack(pady=10)
 
-# Please add funtion comment
+# Add box for predictions
 result_text = tk.Text(root, height=20, width=80)
 result_text.pack(pady=10)
 
-# Please add funtion comment
+# Run tkinter window
 root.mainloop()
 
