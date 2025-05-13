@@ -3,7 +3,8 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import accuracy_score, r2_score
 from sklearn.preprocessing import LabelEncoder
 
 # Define global variables
@@ -84,19 +85,69 @@ def encode_data(features, target):
 
 # Uses input data to create a model and tests accuracy of the model
 def train_model(df, features, target):
-    try:
-        X = df[features]
-        y = df[target]
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    global model
+    if df[target].dtype == 'object':  # categorical
         model = RandomForestClassifier()
-        model.fit(X_train, y_train)
+        train_model_classifier(features, target)
+    else: # Continuous data
+        model = RandomForestRegressor()
+        train_model_regression(features,target)
+
+# Used to train model if target data is categoric
+def train_model_classifier(features, target):
+    print('Classifier Training...')
+    global df, le, model, data_encoded_flag
+    try:
+        # Label encode categorical data
+        X,y = encode_data(features, target)
+
+        # Ensure target data is encoded
+        if df[target].dtype == 'object':
+            y = le.fit_transform(df[target])
+
+        # Split data into training/testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        # Train the model
+        model = RandomForestClassifier()
+        model = model.fit(X_train, y_train)
+
+        # Calculate accurcy
         y_pred = model.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
+        messagebox.showinfo("Model Trained", f"Model trained successfully! Accuracy: {accuracy:.2f}")
+        
+        # Return trained model
+        return True
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to train model: {e}")
+    return None
+
+# Used to train model if target data is continouous (more likely) 
+def train_model_regression(features, target):
+    global df, le, model, data_encoded_flag
+    try:
+        # Label encode categorical data
+        X,y = encode_data(features, target)
+
+        # Split into training/testing data
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        # Fit data to model and predict values 
+        model = model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+
+        # Calculate accuracy score (r2 score as data is continuous)
+        accuracy = r2_score(y_test, y_pred)
+
+        # Return to user 
         messagebox.showinfo("Model Trained", f"Model trained successfully! Accuracy: {accuracy:.2f}")
         return model
     except Exception as e:
         messagebox.showerror("Error", f"Failed to train model: {e}")
     return None
+
+
 
 # Uses model to predict values of the target variable for a given dataset of features
 def make_predictions(model, df, features):
