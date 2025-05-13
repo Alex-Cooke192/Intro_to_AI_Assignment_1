@@ -11,6 +11,7 @@ from sklearn.preprocessing import LabelEncoder
 df = pd.DataFrame()
 le = LabelEncoder()
 model = None
+data_encoded_flag = False
 
 # Parses csv or excel file and saves as a pandas DataFrame, clean data for training
 def load_dataset():
