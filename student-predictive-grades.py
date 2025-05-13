@@ -147,15 +147,52 @@ def train_model_regression(features, target):
         messagebox.showerror("Error", f"Failed to train model: {e}")
     return None
 
+# Determine if target data is continuous or categorical to determine prediction function
+def make_predictions(features, target):
+    if df[target].dtype == 'object':  # categorical
+        print('Predicted using classifier')
+        make_predictions_classifier(features, target)
+    else: # Continuous data
+        print('Predicted using regressor')
+        make_predictions_regression(features,target)
 
 
-# Uses model to predict values of the target variable for a given dataset of features
-def make_predictions(model, df, features):
+def make_predictions_regression(features, target):
+    global model, df, le, data_encoded_flag 
+    # Encode raw data
+    X_new, _ = encode_data(features, target)
+
+    # Make predictions
+    predictions = model.predict(X_new)
+
+    # Display results in GUI 
+    student_IDs = df["student_id"]
+    for element in predictions:
+        print(element)
+        result_text.insert(tk.END, f"{student_IDs.iloc[element]}:{predictions[element]}\n")
+    return True
+
+def make_predictions_classifier(features, target):
+    global model, df, le, data_encoded_flag
     try:
-        X_new = df[features]
-        predictions = model.predict(X_new)
-        result_text.delete(1.0, tk.END)
-        result_text.insert(tk.END, f"Predictions:\n{predictions}")
+        # Check if model has been trained
+        if hasattr(model, "estimators_") == False:
+            messagebox.showerror("Error", "Model is not trained. Please train the model first.")
+            return False
+        
+        # Encode raw data - ONLY CATEGORICAL DATA
+        X_new, _ = encode_data(features, target)
+        
+        # Make predictions
+        predictions = model.predict(X_new) 
+
+        # Decode predictions
+        results = le.inverse_transform(predictions)
+        
+        # Display results in GUI 
+        student_IDs = df["student_id"]
+        for value in predictions:
+            result_text.insert(tk.END, f"{student_IDs.iloc[value]}:{predictions[value]}\n")
     except Exception as e:
         messagebox.showerror("Error", f"Failed to make predictions: {e}")
 
