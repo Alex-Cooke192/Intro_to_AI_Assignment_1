@@ -130,7 +130,7 @@ def train_model_regression(features, target):
         # Label encode categorical data
         X,y = encode_data(features, target)
 
-        # Split into training and testing data
+        # Split into training/testing data
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         # Fit data to model and predict values 
