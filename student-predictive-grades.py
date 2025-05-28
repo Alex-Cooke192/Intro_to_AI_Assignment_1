@@ -220,7 +220,7 @@ train_button = tk.Button(root, text="Train Model", command=lambda: train_model(d
 train_button.pack(pady=10)
 
 # Create make_predictions button & add to GUI
-predict_button = tk.Button(root, text="Make Predictions", command=lambda: make_predictions(model, df, features_entry.get().split(',')))
+predict_button = tk.Button(root, text="Make Predictions", command=lambda: make_predictions(df, features_entry.get().split(',')))
 predict_button.pack(pady=10)
 
 # Add box for predictions
