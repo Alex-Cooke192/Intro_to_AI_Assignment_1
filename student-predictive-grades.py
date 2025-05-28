@@ -149,7 +149,7 @@ def train_model_regression(features, target):
     return None
 
 # Determine if target data is continuous or categorical to determine prediction function
-def make_predictions(features, target):
+def make_predictions(df, features, target):
     if df[target].dtype == 'object':  # categorical
         print('Predicted using classifier')
         make_predictions_classifier(features, target)
@@ -165,12 +165,13 @@ def make_predictions_regression(features, target):
 
     # Make predictions
     predictions = model.predict(X_new)
-
     # Display results in GUI 
     student_IDs = df["student_id"]
+    counter = -1
     for element in predictions:
-        print(element)
-        result_text.insert(tk.END, f"{student_IDs.iloc[element]}:{predictions[element]}\n")
+        counter += 1
+        rounded_num = round(predictions[counter], )
+        result_text.insert(tk.END, f"{student_IDs.iloc[counter]}:{round(predictions[counter], 1)}\n")
     return True
 
 def make_predictions_classifier(features, target):
@@ -220,7 +221,7 @@ train_button = tk.Button(root, text="Train Model", command=lambda: train_model(d
 train_button.pack(pady=10)
 
 # Create make_predictions button & add to GUI
-predict_button = tk.Button(root, text="Make Predictions", command=lambda: make_predictions(model, df, features_entry.get().split(',')))
+predict_button = tk.Button(root, text="Make Predictions", command=lambda: make_predictions(df, features_entry.get().split(',') , target_entry.get()))
 predict_button.pack(pady=10)
 
 # Add box for predictions
@@ -229,4 +230,3 @@ result_text.pack(pady=10)
 
 # Run tkinter window
 root.mainloop()
-
