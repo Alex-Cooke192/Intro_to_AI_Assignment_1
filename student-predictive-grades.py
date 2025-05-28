@@ -87,12 +87,15 @@ def encode_data(features, target):
 # Uses input data to create a model and tests accuracy of the model
 def train_model(df, features, target):
     global model
-    if df[target].dtype == 'object':  # categorical
-        model = RandomForestClassifier()
-        train_model_classifier(features, target)
-    else: # Continuous data
-        model = RandomForestRegressor()
-        train_model_regression(features,target)
+    try:
+        if df[target].dtype == 'object':  # categorical
+            model = RandomForestClassifier()
+            train_model_classifier(features, target)
+        else: # Continuous data
+            model = RandomForestRegressor()
+            train_model_regression(features,target)
+    except KeyError:
+        messagebox.showerror("Error", "Features/Target names are incorrect")
 
 # Used to train model if target data is categoric
 def train_model_classifier(features, target):
@@ -149,13 +152,16 @@ def train_model_regression(features, target):
     return None
 
 # Determine if target data is continuous or categorical to determine prediction function
-def make_predictions(features, target):
-    if df[target].dtype == 'object':  # categorical
-        print('Predicted using classifier')
-        make_predictions_classifier(features, target)
-    else: # Continuous data
-        print('Predicted using regressor')
-        make_predictions_regression(features,target)
+def make_predictions(df, features, target):
+    try:
+        if df[target].dtype == 'object':  # categorical
+            print('Predicted using classifier')
+            make_predictions_classifier(features, target)
+        else: # Continuous data
+            print('Predicted using regressor')
+            make_predictions_regression(features,target)
+    except KeyError:
+        messagebox.showerror("Error", "Features/Target names are incorrect")
 
 
 def make_predictions_regression(features, target):
@@ -165,12 +171,13 @@ def make_predictions_regression(features, target):
 
     # Make predictions
     predictions = model.predict(X_new)
-
     # Display results in GUI 
     student_IDs = df["student_id"]
+    counter = -1
     for element in predictions:
-        print(element)
-        result_text.insert(tk.END, f"{student_IDs.iloc[element]}:{predictions[element]}\n")
+        counter += 1
+        rounded_num = round(predictions[counter], )
+        result_text.insert(tk.END, f"{student_IDs.iloc[counter]}:{round(predictions[counter], 1)}\n")
     return True
 
 def make_predictions_classifier(features, target):
@@ -220,7 +227,7 @@ train_button = tk.Button(root, text="Train Model", command=lambda: train_model(d
 train_button.pack(pady=10)
 
 # Create make_predictions button & add to GUI
-predict_button = tk.Button(root, text="Make Predictions", command=lambda: make_predictions(df, features_entry.get().split(',')))
+predict_button = tk.Button(root, text="Make Predictions", command=lambda: make_predictions(df, features_entry.get().split(',') , target_entry.get()))
 predict_button.pack(pady=10)
 
 # Add box for predictions
@@ -229,4 +236,3 @@ result_text.pack(pady=10)
 
 # Run tkinter window
 root.mainloop()
-
